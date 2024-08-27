@@ -1,0 +1,1 @@
+whatweb --log-xml=whatweb.xml -a 4 http://VICTIM_IP

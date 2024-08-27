@@ -1,0 +1,6 @@
+perl -e 'exec "/bin/bash";'
+{{CTRL}{Z}}
+stty raw -echo && fg
+export SHELL=/bin/bash
+export TERM=screen
+ls

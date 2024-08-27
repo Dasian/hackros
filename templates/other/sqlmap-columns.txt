@@ -1,0 +1,1 @@
+--columns -T TABLE_NAME -D DB_NAME

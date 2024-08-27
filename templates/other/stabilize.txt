@@ -1,0 +1,4 @@
+stty raw -echo && fg
+export SHELL=/bin/bash
+export TERM=screen
+ls

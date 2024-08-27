@@ -1,0 +1,1 @@
+smbclient \\\\VICTIM_IP\\IPC$

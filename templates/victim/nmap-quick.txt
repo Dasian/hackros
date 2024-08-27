@@ -1,0 +1,1 @@
+nmap -A -F -T4 -vv -oA quick VICTIM_IP

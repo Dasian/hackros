@@ -1,0 +1,1 @@
+--tables -D DB_NAME

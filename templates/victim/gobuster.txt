@@ -1,0 +1,1 @@
+gobuster dir -e -w /usr/share/wordlists/dirb/big.txt -u VICTIM_IP

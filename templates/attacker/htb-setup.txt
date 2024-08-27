@@ -1,0 +1,4 @@
+{{ALT}{h}}cd ~/server;ls
+{{ALT}{l}}
+{{ALT}{k}}cd ~/server;php -S ATTACKER_IP:80
+{{ALT}{j}}sudo openvpn ~/htb/competitive_Dasian.ovpn

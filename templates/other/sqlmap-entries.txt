@@ -1,0 +1,1 @@
+--dump -D DB_NAME -T TABLE_NAME -C COL_NAME

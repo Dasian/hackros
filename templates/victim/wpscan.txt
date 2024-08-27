@@ -1,0 +1,1 @@
+wpscan --url http://VICTIM_IP --output wpscan.txt

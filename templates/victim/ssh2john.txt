@@ -1,0 +1,1 @@
+ssh2john id_rsa > crack.txt

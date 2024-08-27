@@ -1,0 +1,1 @@
+nmap -A -p- -T4 -vv -oA full VICTIM_DOMAIN

