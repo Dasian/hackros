@@ -18,6 +18,7 @@ def main():
     parser.add_argument('--loop', help='continue asking for user input', action='store_true')
     parser.add_argument('--inputfile', help='file with text to be converted')
     parser.add_argument('--gui', help='gui interface for setting the attacker and victim ip, will update related macros', action='store_true')
+    parser.add_argument('--output', help='save output to a file')
     args = parser.parse_args()
 
     if args.gui:
@@ -29,21 +30,27 @@ def main():
         while s != 'exit':
             print(convert(s))
             s = input(input_msg)
-    elif args.text != None and type(args.text) == str:
-        # text doesn't exist bro
-        # default behavior without user input
-        print(convert(args.text))
-    elif args.inputfile != None and os.path.isfile(args.inputfile):
+    elif args.text and type(args.text) == str:
+        # convert from commandline str
+        macro_str = convert(args.text) 
+    elif args.inputfile and os.path.isfile(args.inputfile):
         # convert from file
         with open(args.inputfile) as f:
             lines = f.readlines()
             lines = [l.replace('\n', '') for l in lines]
             macro_str = '\n'.join(lines)
-        print(convert(macro_str))
+        macro_str = convert(macro_str) 
     else:
         parser.print_usage()
+        return
 
-    # TODO save to file?
+    if args.output:
+        # save to file
+        with open(args.output, 'w') as f:
+            f.write(macro_str)
+    else:
+        # output converted macro
+        print(macro_str)
     return
 
 # TODO improve gui
