@@ -1,6 +1,14 @@
 # place curly braces around each character in a string so the streamdeck
 # supermacro extension can paste text into a virtual machine
 
+# fills predefined macro variables (VICTIM_IP, ATTACKER_IP, etc.)
+# based on directory structure
+# prevents regenerating macros but code is less clean
+
+# creates an exception for templates with double braces
+# in order to manually add shortcuts 
+# {{ctrl}{c}} -> ctrl + c
+
 # the normal pasting functionality doesn't work since the keyboard isn't
 # used as a hid device? something to do with pasting in a window?
 # plus virtual machines input things weird so i'm using the super
