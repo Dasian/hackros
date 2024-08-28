@@ -15,6 +15,10 @@
 # macro action to simulate real keypresses as opposed to just pasting
 # a predefined string
 
+# *** they fixed default text input with the forced macro option ***
+# there is also support for variables but not sure if it applies to all
+# macros/would need to read from a file for each macro which is annoyin
+
 import argparse
 import os
 import tkinter as tk
@@ -199,15 +203,18 @@ def convert(s):
         # useful for shortcuts that don't exist in text
         # {{ALT}{ENTER}} {{CTRL}{z}}
         if c == '{' and i+1<len(s) and s[i+1] == '{':
+            # start characters {{ found, ignore inner brace
             ignore = True
             if i > 0:
                 s1 += '}{'
             continue
         elif ignore and c == '}' and s[i-1] == '}':
+            # outer brace }} found, continue converting
             ignore = False
             s1 += '}{'
             continue
         elif ignore:
+            # add ignored characters
             s1 += c
             continue
 
