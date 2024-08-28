@@ -7,23 +7,6 @@
 # macro action to simulate real keypresses as opposed to just pasting
 # a predefined string
 
-# the way it's processed is weird
-# for some reason escaping is strange when you have mismatched braces
-# so if you do
-#   {}{{BACK}{BACK}{BACK}}string_here
-# it will just print the string
-# this doesn't work for the virtual machine though...
-
-# okay so duplicate letters like tt in http will only be output as one letter
-# this is annoying
-# 2 -> 1, 3 -> 2, 4 -> 2, 5 -> 2, 6 -> 2
-# occurs with basically all symbols
-
-# TODO
-# connect ip input to streamdeck
-# cleanup args
-# folder for values without a target
-
 import argparse
 import os
 import tkinter as tk
@@ -31,75 +14,98 @@ import tkinter as tk
 def main():
     parser = argparse.ArgumentParser(prog='macrogen',
                                      description='Converts input into the SuperMacro format for the Stream Deck')
+    parser.add_argument('text', help='text to be converted into a macro', nargs='?', default=None)
     parser.add_argument('--loop', help='continue asking for user input', action='store_true')
     parser.add_argument('--inputfile', help='file with text to be converted')
     parser.add_argument('--gui', help='gui interface for setting the attacker and victim ip, will update related macros', action='store_true')
     args = parser.parse_args()
-    print('args:', args)
 
     if args.gui:
-        frame = tk.Tk()
-        frame.title('set ips')
-        frame.geometry('300x250')
-
-        # victim
-        victim_box = tk.Text(frame, height=2, width=20)
-        victim_box.pack()
-        def set_victim():
-            print('set victim')
-            inp = victim_box.get(1.0, 'end-1c')
-            print(inp)
-            fill_templates('victim', ip=inp)
-        victim_submit = tk.Button(frame, text='victim ip', command=set_victim)
-        victim_submit.pack()
-
-        # attacker
-        attacker_box = tk.Text(frame, height=2, width=20)
-        attacker_box.pack()
-        def set_attacker():
-            print('set attacker')
-            inp = attacker_box.get(1.0, 'end-1c')
-            print(inp)
-            fill_templates('attacker', ip=inp)
-        attacker_submit = tk.Button(frame, text='attacker ip', command=set_attacker)
-        attacker_submit.pack()
-
-        # box name, also does other
-        lab_name_box = tk.Text(frame, height=2, width=20)
-        lab_name_box.pack()
-        def set_lab_name():
-            print('lab name')
-            inp = lab_name_box.get(1.0, 'end-1c')
-            print(inp)
-            fill_templates('other', lab_name=inp)
-        lab_name_submit = tk.Button(frame, text='lab name', command=set_lab_name)
-        lab_name_submit.pack()
-
-        # victim_domain
-        domain_box = tk.Text(frame, height=2, width=20)
-        domain_box.pack()
-        def set_domain():
-            print('set domain')
-            inp = domain_box.get(1.0, 'end-1c')
-            print(inp)
-            fill_templates('victim-domain', domain=inp)
-        domain_submit = tk.Button(frame, text='victim domain', command=set_domain)
-        domain_submit.pack()
-
-        frame.mainloop()
+        convert_gui()
     elif args.loop:
+        # continuous conversion loop
         input_msg = 'Enter the string, hoe (or exit): '
         s = input(input_msg)
         while s != 'exit':
-            s2 = convert(s)
-            print(s2)
+            print(convert(s))
             s = input(input_msg)
     elif args.text != None and type(args.text) == str:
+        # text doesn't exist bro
+        # default behavior without user input
         print(convert(args.text))
     elif args.inputfile != None and os.path.isfile(args.inputfile):
-        text = open(args.inputfile)
-        convert(text)
+        # convert from file
+        with open(args.inputfile) as f:
+            lines = f.readlines()
+            lines = [l.replace('\n', '') for l in lines]
+            macro_str = '\n'.join(lines)
+        print(convert(macro_str))
+    else:
+        parser.print_usage()
 
+    # TODO save to file?
+    return
+
+# TODO improve gui
+#   use a dict to replace keywords
+# graphic user interface for inputting values
+def convert_gui():
+    frame = tk.Tk()
+    frame.title('set ips')
+    frame.geometry('300x250')
+
+    # replace['variable_name'] = value
+    replace = {}
+
+    # victim
+    victim_box = tk.Text(frame, height=2, width=20)
+    victim_box.pack()
+    def set_victim():
+        print('set victim')
+        inp = victim_box.get(1.0, 'end-1c')
+        print(inp)
+        fill_templates('victim', ip=inp)
+    victim_submit = tk.Button(frame, text='victim ip', command=set_victim)
+    victim_submit.pack()
+
+    # attacker
+    attacker_box = tk.Text(frame, height=2, width=20)
+    attacker_box.pack()
+    def set_attacker():
+        print('set attacker')
+        inp = attacker_box.get(1.0, 'end-1c')
+        print(inp)
+        fill_templates('attacker', ip=inp)
+    attacker_submit = tk.Button(frame, text='attacker ip', command=set_attacker)
+    attacker_submit.pack()
+
+    # box name, also does other
+    lab_name_box = tk.Text(frame, height=2, width=20)
+    lab_name_box.pack()
+    def set_lab_name():
+        print('lab name')
+        inp = lab_name_box.get(1.0, 'end-1c')
+        print(inp)
+        fill_templates('other', lab_name=inp)
+    lab_name_submit = tk.Button(frame, text='lab name', command=set_lab_name)
+    lab_name_submit.pack()
+
+    # victim_domain
+    domain_box = tk.Text(frame, height=2, width=20)
+    domain_box.pack()
+    def set_domain():
+        print('set domain')
+        inp = domain_box.get(1.0, 'end-1c')
+        print(inp)
+        fill_templates('victim-domain', domain=inp)
+    domain_submit = tk.Button(frame, text='victim domain', command=set_domain)
+    domain_submit.pack()
+
+    frame.mainloop()
+    return
+
+# TODO rework directory structure
+#   work on linux
 # replace variables like VICTIM_IP from the macro templates
 def fill_templates(directory, ip=None, domain=None, lab_name=None):
     # valid template variables
@@ -125,7 +131,7 @@ def fill_templates(directory, ip=None, domain=None, lab_name=None):
     # fill templates
     macro_dir = 'macros\\'
     for i in range(len(template_fnames)):
-        # read template
+        # read template + preprocess
         path = template_paths[i]
         f = open(path)
         lines = f.readlines()
@@ -133,13 +139,18 @@ def fill_templates(directory, ip=None, domain=None, lab_name=None):
         macro_str = '\n'.join(lines)
         f.close()
 
-        # replace target variable with ip
+        # maybe if TARGET in macro_str
+        # issues are updating only one value
+        # and an update dict would update all macros
+        # at the same time
+
+        # replace target variable
+        # convert to macro keystroke
         if ip is not None:
             macro_str = convert(macro_str.replace(target, ip)) 
         elif domain is not None:
             macro_str = convert(macro_str.replace(target, domain)) 
         elif lab_name is not None:
-            print('changing lab name')
             macro_str = convert(macro_str.replace(target, lab_name))
         else:
             macro_str = convert(macro_str)
@@ -166,9 +177,11 @@ def convert(s):
     for i in range(len(s)):
         c = s[i]
 
-        # exception for double curly braces
-        # keep characters in double braces the same
-        # useful for pressing multiple keys at once
+        # TODO make exception code cleaner
+        # manual exception for double curly braces
+        # keep characters in double braces untouched
+        # maybe make an exception flag?
+        # useful for shortcuts that don't exist in text
         # {{ALT}{ENTER}} {{CTRL}{z}}
         if c == '{' and i+1<len(s) and s[i+1] == '{':
             ignore = True
@@ -184,7 +197,7 @@ def convert(s):
             continue
 
         # make every character it's own keystroke (fixes duplicates and some delay issues)
-        # should also set the delay to maybe 30 ms?
+        # should also set the delay to maybe 30 ms in the streamdeck
         # there are redundant empty braces added, i do not care
         s1 += '}{'
         
@@ -202,10 +215,10 @@ def convert(s):
             s1 += '{' + c + '}'
     s1 += '}'
 
+    # TODO don't have,, empty braces to clean in the first place
     # remove empty curly braces
     while s1.find('{}') > -1:
         s1 = s1.replace('{}','')
-
     return s1
 
 if __name__ == '__main__':
