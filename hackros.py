@@ -65,6 +65,10 @@ def main():
         print(macro_str)
     return
 
+# text user interface
+def tui():
+    return
+
 # TODO improve gui
 #   use a dict to replace keywords
 # graphic user interface for inputting values
