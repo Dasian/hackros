@@ -123,15 +123,23 @@ class HackroGenerator():
 
         # get absolute file paths of templates for reading
         template_dir = f'{os.getcwd()}{file_delim}templates{file_delim}{target}'
+        # absolute paths to template files
         template_paths = []
-        for f in os.listdir(target_dir):
+        # names of hackro files to generate
+        hackro_fnames = []
+        for f in os.listdir(template_dir):
             abs_path = f'{template_dir}{file_delim}{f}'
             template_paths.append(abs_path)
+            hackro_fnames.append(f)
+
+        # create output directory for hackros
+        hackro_dir = f'generated_hackros{file_delim}'
+        if not os.path.isdir(hackro_dir):
+            os.makedirs(hackro_dir)
 
         # fill templates, convert to keystroke format,
         # then write to file
-        macro_dir = f'macros{file_delim}'
-        for path in template_paths:
+        for i, path in enumerate(template_paths):
             # read template + place it into one string
             with open(path) as f:
                 lines = f.readlines()
@@ -143,7 +151,7 @@ class HackroGenerator():
             macro_str = self.convert(macro_str.replace(target, self.tokens[target])) 
 
             # write updated macro
-            hackro_path = f'{macro_dir}{template_fnames[i]}'
+            hackro_path = f'{hackro_dir}{hackro_fnames[i]}'
             with open(hackro_path, 'w') as f:
                 f.write(macro_str)
         return
