@@ -13,6 +13,9 @@ When playing a CTF on TryHackMe or HackTheBox there are often repetitve commands
 directory bruteforce, or stabilizing a reverse shell. By making macro templates with a macro variable
 set to the IP or domain name of our target box, we can execute these commands with one button!
 
+> [!NOTE]
+> Since this repo's creation the [SuperMacro](https://docs.barraider.com/faqs/supermacro/variables/) plugin has been updated to include variables and the **pasting of text directly into a virtual machine with the "Forced Macro Mode" option. I'm still going to update this repo since I've included it in my workflow but check out the changes!
+
 # Installation
 > [!NOTE]
 > The SuperMacro plugin and this script will only work on Windows
@@ -28,14 +31,14 @@ pip3 install -r requirements.txt
 ```
 
 # Usage
-Filing variables only works in the gui mode and will write the macros in the "macros" directory
+Filing variables only works in the tui mode and will write the macros in the "generated_hackros" directory
 ```cmd
-python macrogen.py --gui
+python hackros.py --tui
 ```
 
 There are other command line options for smaller conversions
 ```
-usage: macrogen [-h] [--loop] [--inputfile INPUTFILE] [--gui] [--output OUTPUT] [text]
+usage: hackros [-h] [--loop] [--inputfile INPUTFILE] [--tui] [--output OUTPUT] [text]
 
 Converts input into the SuperMacro format for the Stream Deck
 
@@ -47,13 +50,16 @@ options:
   --loop                continue asking for user input
   --inputfile INPUTFILE
                         file with text to be converted
-  --gui                 gui interface for setting the attacker and victim ip, will update related macros
+  --tui                 tui interface for setting the attacker and victim ip, will update related macros
   --output OUTPUT       save output to a file
 ```
 
 # TODO
 - [x] Improve cmdline
 - [x] Create README
-- [X] Improve GUI (replaced with TUI)
+- [X] Replace GUI with TUI
 - [ ] Rework filling variables
-- [ ] Clean code
+- [ ] Improve Frontend
+- [ ] Implement Wildcard Command
+- [ ] Add Credentials/Profiles
+- [~] Clean code
