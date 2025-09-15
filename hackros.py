@@ -29,7 +29,6 @@ def main():
     parser.add_argument('text', help='text to be converted into a macro', nargs='?', default=None)
     parser.add_argument('--loop', help='continue asking for user input', action='store_true')
     parser.add_argument('--inputfile', help='file with text to be converted')
-    # parser.add_argument('--gui', help='gui interface for setting the attacker and victim ip, will update related macros', action='store_true')
     parser.add_argument('--tui', help='tui interface for setting the attacker and victim ip, will update related macros', action='store_true')
     parser.add_argument('--output', help='save output to a file')
     args = parser.parse_args()
@@ -39,6 +38,7 @@ def main():
     if args.tui:
         # text user interface pog
         tui(hackro)
+        exit()
     elif args.loop:
         # continuous conversion loop
         input_msg = 'Enter the string, hoe (or exit): '
@@ -64,7 +64,7 @@ def main():
         # save to file
         with open(args.output, 'w') as f:
             f.write(macro_str)
-    else:
+    elif macro_str != None:
         # output converted macro
         print(macro_str)
     return
@@ -80,6 +80,10 @@ def tui(hackro=None):
     hackro.tokens['VICTIM_DOMAIN'] = 'box.htb'
     hackro.tokens['LAB_NAME'] = 'box'
 
+    import tui
+    app = tui.HackrosApp()
+    app.run()
+
     return
 
 class HackroGenerator():
@@ -87,6 +91,8 @@ class HackroGenerator():
         # dictionary of values to replace + value to replace with
         # hackro.tokens['VICTIM_IP'] = '10.10.11.11'
         self.tokens = tokens
+        self.tokens['USER'] = 'USER'
+        self.tokens['PASSWORD'] = 'PASSWORD'
 
         # special characters
         self.key_map = {' ': 'SPACE', '\n': 'RETURN', ',': 'OEM_COMMA', '=': 'OEM_PLUS', '.': 'OEM_PERIOD', '-': 'OEM_MINUS',
@@ -107,15 +113,17 @@ class HackroGenerator():
     # 'ATTACKER_IP' generates 
     def generate_hackro(self, token: str) -> None:
         if token not in self.tokens.keys():
-            raise(f'{token} does not exist')
+            raise(f'{token} does not exist! Valid tokens: {self.tokens.keys()}')
         self.fill_templates(token)
+    
+    # hack solution to generate the "other" templates
+    def refresh_misc(self) -> None:
+        self.tokens['other'] = ''
+        self.fill_templates('other')
 
     # replace variables like VICTIM_IP from the macro templates
     # target: token to replace in template files
     def fill_templates(self, target: str) -> None:
-        # TODO figure out lab name
-        if target == 'LAB_NAME':
-            directory = 'other'
         if platform.system() == 'Linux':
             file_delim = '/'
         else:
@@ -131,6 +139,16 @@ class HackroGenerator():
             abs_path = f'{template_dir}{file_delim}{f}'
             template_paths.append(abs_path)
             hackro_fnames.append(f)
+        
+        # grab multiple token templates if target token exists
+        template_dir = f'{os.getcwd()}{file_delim}templates{file_delim}multiple-tokens'
+        mult_paths = []
+        for f in os.listdir(template_dir):
+            abs_path = f'{template_dir}{file_delim}{f}'
+            with open(abs_path) as fcheck:
+                if target in fcheck.read():
+                    mult_paths.append(abs_path)
+                    hackro_fnames.append(f)
 
         # create output directory for hackros
         hackro_dir = f'generated_hackros{file_delim}'
@@ -139,16 +157,25 @@ class HackroGenerator():
 
         # fill templates, convert to keystroke format,
         # then write to file
-        for i, path in enumerate(template_paths):
+        for i, path in enumerate(template_paths + mult_paths):
             # read template + place it into one string
             with open(path) as f:
                 lines = f.readlines()
                 lines = [l.replace('\n', '') for l in lines]
                 macro_str = '\n'.join(lines)
 
-            # replace target variable and 
+            # replace target variable in template 
+            if i < len(template_paths):
+                # single token
+                macro_str = macro_str.replace(target, self.tokens[target])
+            else:
+                # multiple tokens
+                for key in self.tokens.keys():
+                    if key in macro_str:
+                        macro_str = macro_str.replace(key, self.tokens[key])
+
             # convert to macro keystroke
-            macro_str = self.convert(macro_str.replace(target, self.tokens[target])) 
+            macro_str = self.convert(macro_str) 
 
             # write updated macro
             hackro_path = f'{hackro_dir}{hackro_fnames[i]}'
