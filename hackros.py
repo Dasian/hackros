@@ -32,12 +32,11 @@ def main():
     parser.add_argument('--tui', help='tui interface for setting the attacker and victim ip, will update related macros', action='store_true')
     parser.add_argument('--output', help='save output to a file')
     args = parser.parse_args()
-
     hackro = HackroGenerator()
 
     if args.tui:
         # text user interface pog
-        tui(hackro)
+        tui()
         exit()
     elif args.loop:
         # continuous conversion loop
@@ -70,20 +69,10 @@ def main():
     return
 
 # text user interface
-def tui(hackro=None):
-    if hackro is None:
-        hackro = HackroGenerator()
-
-    # replacement values found in templates
-    hackro.tokens['ATTACKER_IP'] = '10.10.14.18'
-    hackro.tokens['VICTIM_IP'] = '10.10.11.90'
-    hackro.tokens['VICTIM_DOMAIN'] = 'box.htb'
-    hackro.tokens['LAB_NAME'] = 'box'
-
+def tui():
     import tui
     app = tui.HackrosApp()
     app.run()
-
     return
 
 class HackroGenerator():
