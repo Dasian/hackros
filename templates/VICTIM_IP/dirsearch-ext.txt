@@ -1,1 +1,1 @@
-dirsearch -w /usr/share/wordlists/dirb/big.txt -r -f --threads=100 --url=VICTIM_IP --output=dirsearch-ext.txt -e txt,php,html,js
+dirsearch -w /usr/share/wordlists/dirb/big.txt -r -f --threads=100 --url=VICTIM_IP --output=dirsearch-ext.txt -e txt,php,html,js,md
