@@ -17,9 +17,14 @@ set to the IP or domain name of our target box, we can execute these commands wi
 > [!NOTE]
 > The SuperMacro plugin and this script will only work on Windows
 
-There are no special packages required. Just clone the repository
+Clone the repository
 ```cmd
 git clone https://github.com/Dasian/hackros.git
+```
+
+Install the required pacakages
+```cmd
+pip3 install -r requirements.txt
 ```
 
 # Usage
@@ -49,6 +54,6 @@ options:
 # TODO
 - [x] Improve cmdline
 - [x] Create README
-- [ ] Improve GUI
+- [X] Improve GUI (replaced with TUI)
 - [ ] Rework filling variables
 - [ ] Clean code
