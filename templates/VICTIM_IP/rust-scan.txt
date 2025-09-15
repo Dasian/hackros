@@ -1,1 +1,1 @@
-rustscan -a VICTIM_IP -- -A -oA scan -sC
+rustscan -a VICTIM_IP -- -A -sCV

@@ -1,0 +1,1 @@
+sync-ad nxc smb dc.VICTIM_DOMAIN -u 'USER' -p 'PASSWORD' -k --generate-krb5-file krb5.conf

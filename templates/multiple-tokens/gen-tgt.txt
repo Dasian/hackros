@@ -1,0 +1,1 @@
+sync-ad getTGT.py -dc-ip VICTIM_IP 'VICTIM_DOMAIN/USER:PASSWORD'

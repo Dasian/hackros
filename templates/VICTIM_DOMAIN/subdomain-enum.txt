@@ -1,1 +1,1 @@
-wfuzz -c -t 50 -u http://VICTIM_DOMAIN -H 'Host: FUZZ.VICTIM_DOMAIN' -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt 
+wfuzz -c -t 50 -u http://VICTIM_DOMAIN -H 'Host: FUZZ.VICTIM_DOMAIN' -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt 

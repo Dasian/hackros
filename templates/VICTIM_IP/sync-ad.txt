@@ -1,0 +1,1 @@
+alias sync-ad="faketime \"\$(ntpdate -q VICTIM_IP | cut -d ' ' -f 1,2)\" "
