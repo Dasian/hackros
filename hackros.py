@@ -80,8 +80,17 @@ class HackroGenerator():
         # dictionary of values to replace + value to replace with
         # hackro.tokens['VICTIM_IP'] = '10.10.11.11'
         self.tokens = tokens
-        self.tokens['USER'] = 'USER'
+        self.tokens['USERNAME'] = 'USERNAME'
         self.tokens['PASSWORD'] = 'PASSWORD'
+
+        # hack refresh lol
+        self.refresh_misc()
+
+        # saved sets of tokens to reuse
+        # username, password, cookies, hashes, etc.
+        # an array or dictionary, idk yet depends on tui tabs
+        # profiles[key] = {'USERNAME': 'admin', 'PASSWORD': 'iloveyou', 'HASH': 'ADOSDFI'}
+        self.profiles = dict()
 
         # special characters
         self.key_map = {' ': 'SPACE', '\n': 'RETURN', ',': 'OEM_COMMA', '=': 'OEM_PLUS', '.': 'OEM_PERIOD', '-': 'OEM_MINUS',
@@ -93,12 +102,73 @@ class HackroGenerator():
                      '<': 'OEM_COMMA', '+': 'OEM_PLUS', '>': 'OEM_PERIOD', '_': 'OEM_MINUS',
                      ':': 'OEM_1', '?': 'OEM_2', '~': 'OEM_3', '{': 'OEM_4', '|': 'OEM_5', '}': 'OEM_6', '"': 'OEM_7'}
         return
+    
+    # regenerate multiple_token hackros with values in a profile
+    # key: str? int? of the target profile
+    def load_profile(self, profile_key) -> None:
+        # load profile values into replacement values
+        profile = self.profiles[profile_key]
+        for key in profile.keys():
+            self.tokens[key] = profile[key]
+        
+        # reload multiple token hackros
+        self.fill_profile_templates()
+        return
+    
+    # generates hackros in the multiple-tokens template folder
+    # profile changes are mad in load_profile
+    def fill_profile_templates(self) -> None:
+        if platform.system() == 'Linux':
+            file_delim = '/'
+        else:
+            file_delim = '\\'
 
+        # grab multiple token templates if target token exists
+        template_dir = f'{os.getcwd()}{file_delim}templates{file_delim}multiple-tokens'
+        mult_paths = []
+        hackro_fnames = []
+        for f in os.listdir(template_dir):
+            abs_path = f'{template_dir}{file_delim}{f}'
+            mult_paths.append(abs_path)
+            hackro_fnames.append(f)
+
+        # create output directory for hackros
+        hackro_dir = f'generated_hackros{file_delim}'
+        if not os.path.isdir(hackro_dir):
+            os.makedirs(hackro_dir)
+
+        # fill templates, convert to keystroke format,
+        # then write to file
+        for i, path in enumerate(mult_paths):
+            # read template + place it into one string
+            with open(path) as f:
+                lines = f.readlines()
+                lines = [l.replace('\n', '') for l in lines]
+                macro_str = '\n'.join(lines)
+
+            # replace target variable in template 
+            # multiple tokens
+            for key in self.tokens.keys():
+                if key in macro_str:
+                    macro_str = macro_str.replace(key, self.tokens[key])
+
+            # convert to macro keystroke
+            macro_str = self.convert(macro_str) 
+
+            # write updated macro
+            hackro_path = f'{hackro_dir}{hackro_fnames[i]}'
+            with open(hackro_path, 'w') as f:
+                f.write(macro_str)
+        return
+
+    # regenerate every hackro with the current tokens
     def generate_all_hackros(self) -> None:
         for key in self.tokens.keys():
             self.fill_templates(key)
+        self.refresh_misc()
 
     # update hackros with the token string
+    # wrapper for fill_templates
     # 'ATTACKER_IP' generates 
     def generate_hackro(self, token: str) -> None:
         if token not in self.tokens.keys():
