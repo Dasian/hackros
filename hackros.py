@@ -83,9 +83,6 @@ class HackroGenerator():
         self.tokens['USERNAME'] = 'USERNAME'
         self.tokens['PASSWORD'] = 'PASSWORD'
 
-        # hack refresh lol
-        self.refresh_misc()
-
         # saved sets of tokens to reuse
         # username, password, cookies, hashes, etc.
         # an array or dictionary, idk yet depends on tui tabs
@@ -101,6 +98,9 @@ class HackroGenerator():
         self.shift_map = {'!': '1', '@': '2', '#': '3', '$': '4', '%': '5', '^': '6', '&': '7', '*': '8', '(': '9', ')': '0',
                      '<': 'OEM_COMMA', '+': 'OEM_PLUS', '>': 'OEM_PERIOD', '_': 'OEM_MINUS',
                      ':': 'OEM_1', '?': 'OEM_2', '~': 'OEM_3', '{': 'OEM_4', '|': 'OEM_5', '}': 'OEM_6', '"': 'OEM_7'}
+
+        # hack refresh lol
+        self.refresh_misc()
         return
     
     # regenerate multiple_token hackros with values in a profile
