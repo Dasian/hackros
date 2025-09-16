@@ -89,7 +89,7 @@ class HackrosApp(App):
     #target-input-grid {
         layout: grid;
         row-span: 1;
-        height: 3fr;
+        height: 4fr; /* needed to keep input visible - don't ask */
     }
     TabbedContent ContentSwitcher {
         border: solid red;
@@ -119,9 +119,10 @@ class HackrosApp(App):
         yield Header()
         with Container(id='app-grid'):
 
+            # TODO maybe make creds a tab here?
             # target input
             with Vertical(id='top-left'):
-                with TabbedContent():
+                with TabbedContent(id='targets'):
                     with TabPane('target-input'):
                         with Vertical(id='target-input-grid'):
                             yield LabeledInput('Attacker IP:', id='attacker-input')
@@ -132,12 +133,12 @@ class HackrosApp(App):
                             yield Static('Attacker IP: None', id='attacker-ip')
                             yield Static('Victim IP: None', id='victim-ip')
                             yield Static('Victim Domain: None', id='victim-domain')
-                    with TabPane('Profile'):
-                        yield ProfileTab()
 
             # profiles with creds
             with Vertical(id='top-right'):
-                yield TabbedContent(id='profile-tabs')
+                with TabbedContent(id='profile-tabs'):
+                    with TabPane('creds1'):
+                        yield ProfileTab(self.hgen)
 
             # display command
             with Vertical(id='bottom'):
@@ -146,13 +147,17 @@ class HackrosApp(App):
     # add a new tab?
     def action_add_profile(self) -> None:
         tabs = self.query_one('#profile-tabs')
-        new_tab = TabPane('new-test')
+
+        # TODO get tab name?
+
+        # create new tab
+        new_tab = TabPane(f'creds-{tabs.tab_count + 1}')
         tabs.add_pane(new_tab)
-        # get tab name?
         new_tab.mount()
 
-        # set new profile tab
-        new_tab.mount(ProfileTab())
+        # set tab content to profile widget
+        new_tab.mount(ProfileTab(self.hgen))
+        # tbh idk what value this is...
         tabs.active = new_tab.id
 
     def on_mount(self) -> None:
@@ -163,7 +168,17 @@ class HackrosApp(App):
 class ProfileTab(Widget):
     """ Tab that contains active credential information to be used in hackros """
 
-    def __init__(self) -> None:
+    def __init__(self, hgen: HackroGenerator, tokens: dict={}) -> None:
+        self.hgen = hgen
+        # list of profile tokens supported
+        self.valid_tokens = self.hgen.valid_profile_tokens
+        self.tokens = tokens
+
+        # fill default values
+        if not tokens:
+            for tok in self.valid_tokens:
+                self.tokens[tok] = tok
+
         super().__init__()
     
     DEFAULT_CSS = """
@@ -175,7 +190,7 @@ class ProfileTab(Widget):
     #profile-input-grid {
         layout: grid;
         row-span: 1;
-        height: 3fr; /* Needed to keep labeled input visible??? */
+        height: 6fr; /* Needed to keep labeled input visible??? */
     }
 
     LabeledInput {
@@ -184,34 +199,33 @@ class ProfileTab(Widget):
     """
     
     def compose(self) -> ComposeResult:
+        # profile inputs
         with Vertical(id='profile-input-grid'):
-            yield LabeledInput('Username', id='profile-username-input')
-            yield LabeledInput('Password', id='profile-password-input')
-            yield LabeledInput('Hash', id='profile-hash-input')
+            for tok in self.tokens.keys():
+                yield LabeledInput(f'{tok}', id=f'{tok}')
+
+        # profile outputs
         with Vertical(id='profile-output-grid'):
-            yield Static('Username: None', id='profile-username-output')
-            yield Static('Password: None', id='profile-password-output')
-            yield Static('Hash: None', id='profile-hash-output')
-        
+            for tok in self.tokens.keys():
+                yield Static(f'{tok}: None', id=f'{tok}-output')
+
+    # updates the profile/multiple token hackros when
+    # an input is received
     def on_hackro_message(self, msg: HackroMessage) -> None:
-        target_id = msg.id
+        token = msg.id
         value = msg.value
 
-        # TODO improve this and make it readable + reusable
-        if target_id == 'profile-username-input':
-            output_id = '#profile-username-output'
-            output_msg = f'Username: {value}'
-        elif target_id == 'profile-password-input':
-            output_id = '#profile-password-output'
-            output_msg = f'Password: {value}'
-        elif target_id == 'profile-hash-input':
-            output_id = '#profile-hash-output'
-            output_msg = f'Hash: {value}'
-        else:
+        if token not in self.valid_tokens:
             return
 
+        # update profile output
+        output_id = f'#{token}-output'
+        output_msg = f'{token}: {value}'
         output = self.query_one(output_id)
         output.update(output_msg)
+
+        # update profile backend
+        self.hgen.update_profile(self.id, token, value)
 
 
 class LabeledInput(Widget):

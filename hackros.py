@@ -22,6 +22,7 @@
 import argparse
 import platform
 import os
+from collections import defaultdict
 
 def main():
     parser = argparse.ArgumentParser(prog='hackros',
@@ -76,18 +77,23 @@ def tui():
     return
 
 class HackroGenerator():
-    def __init__(self, tokens={}):
+    def __init__(self, tokens: dict={}):
         # dictionary of values to replace + value to replace with
         # hackro.tokens['VICTIM_IP'] = '10.10.11.11'
         self.tokens = tokens
-        self.tokens['USERNAME'] = 'USERNAME'
-        self.tokens['PASSWORD'] = 'PASSWORD'
+        self.valid_tokens = {'VICTIM_DOMAIN', 'VICTIM_IP', 'ATTACKER_IP',
+                             'HASH', 'USERNAME', 'PASSWORD'}
+
+        # set defaults
+        if not self.tokens:
+            for tok in self.valid_tokens:
+                self.tokens[tok] = tok
 
         # saved sets of tokens to reuse
         # dictionary that points to another dictionary
         # profiles[key] = {'USERNAME': 'admin', 'PASSWORD': 'iloveyou', 'HASH': 'ADOSDFI'}
-        self.valid_profile_tokens = {'USERNAME', 'PASSWORD', 'HASH'}
-        self.profiles = dict()
+        self.valid_profile_tokens = ['USERNAME', 'PASSWORD', 'HASH']
+        self.profiles = defaultdict(dict)
 
 
         # special characters
@@ -110,12 +116,13 @@ class HackroGenerator():
         if token not in self.valid_profile_tokens:
             raise(f"{token} is not a supported profile token!")
         self.profiles[profile_key][token] = value
+        self.load_profile(profile_key)
         return
     
     # regenerate multiple_token hackros with values in a profile
     # key: str? int? of the target profile
     def load_profile(self, profile_key) -> None:
-        # load profile values into replacement values
+        # load profile tokens into global tokens
         profile = self.profiles[profile_key]
         for key in profile.keys():
             self.tokens[key] = profile[key]
