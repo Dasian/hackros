@@ -84,10 +84,11 @@ class HackroGenerator():
         self.tokens['PASSWORD'] = 'PASSWORD'
 
         # saved sets of tokens to reuse
-        # username, password, cookies, hashes, etc.
-        # an array or dictionary, idk yet depends on tui tabs
+        # dictionary that points to another dictionary
         # profiles[key] = {'USERNAME': 'admin', 'PASSWORD': 'iloveyou', 'HASH': 'ADOSDFI'}
+        self.valid_profile_tokens = {'USERNAME', 'PASSWORD', 'HASH'}
         self.profiles = dict()
+
 
         # special characters
         self.key_map = {' ': 'SPACE', '\n': 'RETURN', ',': 'OEM_COMMA', '=': 'OEM_PLUS', '.': 'OEM_PERIOD', '-': 'OEM_MINUS',
@@ -101,6 +102,14 @@ class HackroGenerator():
 
         # hack refresh lol
         self.refresh_misc()
+        return
+    
+    # update the token values for a given profile
+    # self.profiles[profile_key][token] = value
+    def update_profile(self, profile_key, token: str, value: str) -> None:
+        if token not in self.valid_profile_tokens:
+            raise(f"{token} is not a supported profile token!")
+        self.profiles[profile_key][token] = value
         return
     
     # regenerate multiple_token hackros with values in a profile
