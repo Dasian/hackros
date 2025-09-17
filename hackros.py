@@ -83,6 +83,7 @@ class HackroGenerator():
         self.tokens = tokens
         self.valid_tokens = {'VICTIM_DOMAIN', 'VICTIM_IP', 'ATTACKER_IP',
                              'HASH', 'USERNAME', 'PASSWORD'}
+        self.target_tokens = ['ATTACKER_IP', 'VICTIM_IP', 'VICTIM_DOMAIN']
 
         # set defaults
         if not self.tokens:

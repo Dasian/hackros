@@ -10,6 +10,9 @@ from hackros import HackroGenerator
 
 class HackroMessage(Message):
     """ Custom Message used to communicate between widgets """
+    
+    # id is the widget id of the sender (labeled input usually)
+    # value is what was entered
     def __init__(self, value: str, id: str) -> None:
         super().__init__()
         self.value = value
@@ -71,6 +74,7 @@ class HackrosApp(App):
     # TODO individual css file for live editing
     DEFAULT_CSS = """
     Screen {
+        /* yeah these do.. nothing */
         overflow-x: auto;
         overflow-y: auto;
     }
@@ -133,11 +137,13 @@ class HackrosApp(App):
                             yield Static('Attacker IP: None', id='attacker-ip')
                             yield Static('Victim IP: None', id='victim-ip')
                             yield Static('Victim Domain: None', id='victim-domain')
+                    with TabPane('target-widget-test'):
+                        yield TargetTab(self.hgen)
 
             # profiles with creds
             with Vertical(id='top-right'):
                 with TabbedContent(id='profile-tabs'):
-                    with TabPane('creds1'):
+                    with TabPane('creds-1'):
                         yield ProfileTab(self.hgen)
 
             # display command
@@ -147,8 +153,6 @@ class HackrosApp(App):
     # add a new tab?
     def action_add_profile(self) -> None:
         tabs = self.query_one('#profile-tabs')
-
-        # TODO get tab name?
 
         # create new tab
         new_tab = TabPane(f'creds-{tabs.tab_count + 1}')
@@ -165,12 +169,56 @@ class HackrosApp(App):
         self.title = 'Hackros'
         self.sub_title = 'Template Injection Who?'
 
+class TargetTab(Widget):
+    """ Tab to take in target info """
+
+    def __init__(self, hgen: HackroGenerator) -> None:
+        self.hgen = hgen
+        self.valid_tokens = self.hgen.target_tokens
+        super().__init__()
+
+    def on_hackro_message(self, msg: HackroMessage) -> None:
+        token = msg.id
+        value = msg.value
+
+        # update ui
+        output_widget = self.query_one(f'#{token}-output')
+        output_widget.update(f'{token}: {value}')
+
+        # update hackros
+        self.hgen.tokens[token] = value
+        self.hgen.generate_hackro(token)
+
+    DEFAULT_CSS = """
+    TargetTab {
+        border: solid yellow;
+        height: 1fr;
+    }
+    
+    #target-input-grid {
+        layout: grid;
+        row-span: 1;
+        height: 6fr; /* Needed to keep labeled input visible??? */
+    }
+
+    LabeledInput {
+        border: solid green;
+    }
+    """
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id='target-input'):
+            for tok in self.valid_tokens:
+                yield LabeledInput(f'{tok}', id=f'{tok}')
+        with Vertical(id='target-output'):
+            for tok in self.valid_tokens:
+                yield Static(f'{tok}: None', id=f'{tok}-output')
+
 class ProfileTab(Widget):
     """ Tab that contains active credential information to be used in hackros """
 
     def __init__(self, hgen: HackroGenerator, tokens: dict={}) -> None:
         self.hgen = hgen
-        # list of profile tokens supported
         self.valid_tokens = self.hgen.valid_profile_tokens
         self.tokens = tokens
 
@@ -246,7 +294,7 @@ class LabeledInput(Widget):
 
     #ip-input {
         width: 1fr;
-        height: 2fr;
+        height: 3fr;
         border: solid green;
     }
 
