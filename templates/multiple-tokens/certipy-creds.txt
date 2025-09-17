@@ -1,0 +1,1 @@
+sync-ad certipy-ad find -u USERNAME@VICTIM_DOMAIN -p 'PASSWORD' -dc-ip VICTIM_IP -stdout

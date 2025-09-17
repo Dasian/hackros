@@ -1,0 +1,1 @@
+sync-ad smbclient.py -k -no-pass dc.VICTIM_DOMAIN

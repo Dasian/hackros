@@ -1,0 +1,1 @@
+sync-ad certipy-ad find -u 'USERNAME@VICTIM_DOMAIN' -hashes 'HASH' -dc-ip VICTIM_IP -vulnerable -stdout
